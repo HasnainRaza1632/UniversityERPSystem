@@ -27,18 +27,19 @@ public class UserDAO {
             return users;
         }
 
-        public static void saveUser(Map<String, User> userMap) {
-            if (userMap.isEmpty()){
-                System.out.println("Error: UserMap is Empty");
-                return;
-            }
-            try(BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))){
-                for (Map.Entry<String , User> user : userMap.entrySet()){
-                    fileWriter.write(user.getKey() + "," + user.getValue());
-                    fileWriter.newLine();
-                }
-            } catch (IOException e) {
-                System.out.printf("File not Found Exception : %s", e.getMessage());
-            }
+    public static void saveUser(Map<String, User> userMap) {
+        if (userMap.isEmpty()){
+            System.out.println("Error: UserMap is Empty");
+            return;
         }
+        try(BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))){
+            for (Map.Entry<String, User> entry : userMap.entrySet()){
+                User u = entry.getValue();
+                fileWriter.write(u.getUsername() + "," + u.getPassword() + "," + u.getRole());
+                fileWriter.newLine();
+            }
+        } catch (IOException e) {
+            System.out.printf("File not Found Exception : %s", e.getMessage());
+        }
+    }
 }
