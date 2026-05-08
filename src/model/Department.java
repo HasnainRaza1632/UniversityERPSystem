@@ -66,13 +66,15 @@ public class Department {
     }
 
     public void removeCourse(Course course) {
-        if(course != null){
+        if(course != null && courses.remove(course)){
             courses.remove(course);
         }
     }
 
     public void removeFaculty(Faculty faculty) {
-        facultyList.remove(faculty);
+        if(faculty != null && facultyList.remove(faculty)){
+            facultyList.remove(faculty);
+        }
     }
 
     public String getDetails() {

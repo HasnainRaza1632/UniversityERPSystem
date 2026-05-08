@@ -1,6 +1,5 @@
 package model;
 
-import javax.management.DescriptorAccess;
 import java.util.List;
 
 public class Course {
