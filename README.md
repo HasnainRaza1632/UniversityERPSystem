@@ -2,8 +2,9 @@
 
 **Course:** Object-Oriented Programming  
 **Semester:** 2nd Semester Final Project  
-**Author:** [Hasnain Raza]  
+**Author:** [Hasnain Raza] and [Abdullah Shah]  
 **Date:** May 2026
+
 
 ---
 
@@ -420,7 +421,7 @@ Educational Project - Free to use for learning purposes
 
 ## 📧 CONTACT
 
-For questions or issues, contact: [chandiohasnain807@gmail.com]
+For questions or issues, contact: [chandiohasnain807@gmail.com] [syedabdullahshah086@gmail.com]
 
 ---
 
