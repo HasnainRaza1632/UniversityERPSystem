@@ -3,13 +3,11 @@ package model;
 public abstract class Person {
 
     private String name;
-    private String id;
     private String email;
     private String phone;
 
-    public Person(String name , String id , String email , String phone){
+    public Person(String name , String email , String phone){
         this.name = name;
-        this.id = id;
         this.email = email;
         this.phone = phone;
     }
@@ -23,10 +21,6 @@ public abstract class Person {
         return name;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -38,10 +32,6 @@ public abstract class Person {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setPhone(String phone) {

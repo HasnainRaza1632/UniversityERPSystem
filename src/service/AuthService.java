@@ -17,7 +17,7 @@ public class AuthService {
         String username = sc.nextLine();
         System.out.print("Enter your password: ");
         String password = sc.nextLine();
-        System.out.println("Enter your role: ");
+        System.out.print("Enter your role: ");
         String role = sc.nextLine();
 
         if(userMap.containsKey(username)){
@@ -41,7 +41,7 @@ public class AuthService {
         String username = sc.nextLine();
         System.out.print("Enter password: ");
         String password = sc.nextLine();
-        System.out.println("Enter role (Admin/Student/Faculty): ");
+        System.out.print("Enter role (Admin/Student/Faculty): ");
         String role = sc.nextLine();
         if(userMap.containsKey(username)){
             System.out.println("User already exist.");

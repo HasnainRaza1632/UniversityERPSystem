@@ -11,8 +11,8 @@ public class Faculty extends Person{
     private double salary;
     private User user;
 
-    public Faculty(String name , String id , String email , String phone ,String employeeId , String designation , Department department , double salary , User user){
-        super(name, id, email, phone);
+    public Faculty(String name, String email , String phone ,String employeeId , String designation , Department department , double salary , User user){
+        super(name, email, phone);
         this.facultyId = employeeId;
         this.designation = designation;
         this.salary = salary;
@@ -27,6 +27,10 @@ public class Faculty extends Person{
 
     public String getDesignation() {
         return designation;
+    }
+
+    public double getSalary() {
+        return salary;
     }
 
     public Department getDepartment() {
@@ -99,5 +103,10 @@ public class Faculty extends Person{
                 ", department=" + (department != null ? department.getDeptName() : "Not Assigned") +
                 ", assignedCourses=" + assignedCourses.size() +
                 '}';
+    }
+
+    @Override
+    public String toString() {
+        return facultyId + "," + getName() + "," + designation + "," + getEmail();
     }
 }

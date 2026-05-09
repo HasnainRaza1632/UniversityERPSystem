@@ -11,8 +11,8 @@ public class Student extends Person{
     private List<Grade> gradesList;
     private User user;
 
-    public Student(String name, String id, String email, String phone, String regId, int semester, User user){
-        super(name,id,email,phone);
+    public Student(String name, String email, String phone, String regId, int semester, User user){
+        super(name,email,phone);
         this.regId = regId;
         this.semester = semester;
         this.user = user;
@@ -41,6 +41,16 @@ public class Student extends Person{
     }
 
     // Setters
+
+
+    public void setGradesList(List<Grade> gradesList) {
+        this.gradesList = gradesList;
+    }
+
+    public void setCourseList(List<Course> courseList) {
+        this.courseList = courseList;
+    }
+
     public void setRegId(String regId) {
         this.regId = regId;
     }

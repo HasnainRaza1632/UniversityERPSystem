@@ -4,8 +4,8 @@ public class Admin extends Person {
     private String adminId;
     private String position;
 
-    public Admin(String name, String id, String email, String phone, String adminId, String position) {
-        super(name, id, email, phone);
+    public Admin(String name, String email, String phone, String adminId, String position) {
+        super(name, email, phone);
         this.adminId = adminId;
         this.position = position;
     }

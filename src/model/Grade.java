@@ -1,18 +1,20 @@
 package model;
 
 public class Grade {
+    private String gradeId;
     private Course course;
     private Student student;
     private String letterGrade;
     private double gradePoint;
     private String semester;
 
-    public Grade(Course course , Student student , String letterGrade , double gradePoint , String semester){
+    public Grade(String gradeId, Course course , Student student , String letterGrade , String semester){
         this.course = course;
         this.student = student;
         this.letterGrade = letterGrade;
         this.gradePoint = calculateGradePoint(letterGrade);
         this.semester = semester;
+        this.gradeId = gradeId;
     }
 
     private double calculateGradePoint(String letterGrade) {
@@ -62,6 +64,10 @@ public class Grade {
         return semester;
     }
 
+    public String getGradeId() {
+        return gradeId;
+    }
+
     // Setters
     public void setCourse(Course course) {
         this.course = course;
@@ -69,6 +75,10 @@ public class Grade {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    public void setGradeId(String gradeId) {
+        this.gradeId = gradeId;
     }
 
     public void setLetterGrade(String letterGrade) {
