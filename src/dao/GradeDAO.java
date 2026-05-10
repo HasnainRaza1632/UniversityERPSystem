@@ -53,8 +53,19 @@ public class GradeDAO {
     public static void saveGrade(Map<String, Grade> gradeMap) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (Grade grade : gradeMap.values()) {
-                String studentId = (grade.getStudent() != null) ? grade.getStudent().getRegId() : "null";
-                String courseId = (grade.getCourse() != null) ? grade.getCourse().getCourseId() : "null";
+                String studentId = "null";
+                if (grade.getStudent() != null) {
+                    studentId = grade.getStudent().getRegId();
+                } else if (grade.getGradeId() != null && grade.getGradeId().contains("_")) {
+                    studentId = grade.getGradeId().split("_")[0];
+                }
+
+                String courseId = "null";
+                if (grade.getCourse() != null) {
+                    courseId = grade.getCourse().getCourseId();
+                } else if (grade.getGradeId() != null && grade.getGradeId().contains("_")) {
+                    courseId = grade.getGradeId().split("_")[1];
+                }
 
                 writer.write(studentId + "," + courseId + "," + grade.getLetterGrade() + "," + grade.getGradePoint());
                 writer.newLine();

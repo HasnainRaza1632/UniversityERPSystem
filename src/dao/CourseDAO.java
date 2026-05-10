@@ -29,8 +29,22 @@ public class CourseDAO {
                 String courseName = data[1];
                 int creditHours = Integer.parseInt(data[2]);
                 String description = data[3];
+                String assignedFacultyId = data[4];
+                String departmentId = data[5];
 
-                Course course = new Course(courseId, courseName, creditHours, description, null, null);
+                // Fetch proper dependencies so JavaFX UI doesn't crash on null!
+                // This is safe because DepartmentDAO.findDepartmentById uses file-reading methods, no circular loops!
+                Department department = null;
+                if (!departmentId.equals("null") && !departmentId.isEmpty()) {
+                    department = DepartmentDAO.findDepartmentById(departmentId);
+                }
+                
+                Faculty faculty = null;
+                if (!assignedFacultyId.equals("null") && !assignedFacultyId.isEmpty()) {
+                    faculty = FacultyDAO.findFacultyById(assignedFacultyId);
+                }
+                
+                Course course = new Course(courseId, courseName, creditHours, description, faculty, department);
                 courseMap.put(courseId, course);
             }
         } catch (IOException e) {
@@ -59,7 +73,7 @@ public class CourseDAO {
         List<Course> enrolledCourses = new ArrayList<>();
         Map<String, Course> allCourses = getAllCourses();
         
-        File file = new File("src/filehandling/grades.txt");
+        File file = new File("src/filehandling/student_courses.txt");
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
@@ -73,7 +87,7 @@ public class CourseDAO {
                     }
                 }
             } catch (IOException e) {
-                System.err.printf("Error reading student courses from grades: %s%n", e.getMessage());
+                System.err.printf("Error reading student courses from student_courses: %s%n", e.getMessage());
             }
         }
         return enrolledCourses;
@@ -106,5 +120,25 @@ public class CourseDAO {
             System.err.printf("Error reading courses for department: %s%n", e.getMessage());
         }
         return deptCourses;
+    }
+
+    public static boolean enrollStudentInCourse(String studentId, String courseId) {
+        // Prevent duplicate enrollment
+        List<Course> currentlyEnrolled = getCoursesByStudentId(studentId);
+        for (Course c : currentlyEnrolled) {
+            if (c.getCourseId().equals(courseId)) {
+                return false; // Already enrolled
+            }
+        }
+
+        File file = new File("src/filehandling/student_courses.txt");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            writer.write(studentId.trim() + "," + courseId.trim());
+            writer.newLine();
+            return true;
+        } catch (IOException e) {
+            System.err.printf("Error writing to student_courses.txt: %s%n", e.getMessage());
+            return false;
+        }
     }
 }

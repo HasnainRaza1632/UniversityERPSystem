@@ -62,6 +62,7 @@ public class Department {
     public void addFaculty(Faculty faculty) {
         if (faculty != null && !facultyList.contains(faculty)) {
             facultyList.add(faculty);
+            faculty.setDepartment(this);
         }
     }
 
