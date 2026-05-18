@@ -91,12 +91,16 @@ public class Grade {
     }
 
     public String getDetails(){
-        return String.format("%-10s %-30s %3d credits   Grade: %-3s (%.1f)",
-                course.getCourseId(),
-                course.getCourseName(),
-                course.getCreditHours(),
-                letterGrade,
-                gradePoint);
+        String studentInfo = (student != null) ? student.getRegId() : "N/A";
+        String courseInfo = (course != null) ? course.getCourseId() : "N/A";
+        String content = String.format("Student: %-6s | Course: %-6s | Grade: %-2s (%.1f)",
+                studentInfo, courseInfo, letterGrade, gradePoint);
+        int padding = 68 - content.length();
+        if (padding < 0) {
+            content = content.substring(0, 65) + "...";
+            padding = 0;
+        }
+        return "║  " + content + " ".repeat(padding) + "  ║";
     }
 
     @Override

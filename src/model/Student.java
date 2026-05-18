@@ -85,8 +85,8 @@ public class Student extends Person {
         String line = "╠══════════════════════════════════════════════════════════════════════╣";
         String top =  "╔══════════════════════════════════════════════════════════════════════╗";
         String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
-        String title = "║                        STUDENT PROFILE                              ║";
-        return "\n" + top +
+        String title = "║                           STUDENT PROFILE                            ║";
+        return top +
                 "\n" + title +
                 "\n" + line +
                 "\n" + formatLine("Reg ID     : ", getRegId()) +
@@ -117,6 +117,6 @@ public class Student extends Person {
             content = content.substring(0, totalWidth - 3) + "...";
             padding = 0;
         }
-        return "║  " + content + " ".repeat(padding) + "  ║";
+        return "║  " + content + " ".repeat(padding) + "║";
     }
 }

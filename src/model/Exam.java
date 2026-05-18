@@ -97,8 +97,8 @@ public class Exam {
         String line = "╠══════════════════════════════════════════════════════════════════════╣";
         String top =  "╔══════════════════════════════════════════════════════════════════════╗";
         String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
-        String title = "║                          EXAM DETAILS                               ║";
-        return "\n" + top +
+        String title = "║                             EXAM DETAILS                             ║";
+        return top +
                 "\n" + title +
                 "\n" + line +
                 "\n" + formatLine("Exam ID     : ", getExamId()) +

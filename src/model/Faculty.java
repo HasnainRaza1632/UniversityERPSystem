@@ -80,19 +80,28 @@ public class Faculty extends Person{
     }
 
     public void viewAssignedCourses(){
-        System.out.println("\n========== ASSIGNED COURSES ==========");
-        System.out.println("Faculty: " + getName());
-        System.out.println("Designation: " + designation);
-        System.out.println("======================================");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                          ASSIGNED COURSES                            ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        
+        String facLine = "Faculty: " + getName();
+        int paddingFac = 68 - facLine.length();
+        System.out.println("║  " + facLine + " ".repeat(Math.max(0, paddingFac)) + "  ║");
+        
+        String desLine = "Designation: " + designation;
+        int paddingDes = 68 - desLine.length();
+        System.out.println("║  " + desLine + " ".repeat(Math.max(0, paddingDes)) + "  ║");
+        
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
 
         if (assignedCourses.isEmpty()) {
-            System.out.println("No courses assigned.");
+            System.out.println("║  No courses assigned.                                                ║");
         } else {
             for (Course course : assignedCourses) {
                 System.out.println(course.getDetails());
             }
         }
-        System.out.println("======================================\n");
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
     }
 
 
@@ -110,8 +119,8 @@ public class Faculty extends Person{
         String line = "╠══════════════════════════════════════════════════════════════════════╣";
         String top =  "╔══════════════════════════════════════════════════════════════════════╗";
         String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
-        String title = "║                        FACULTY PROFILE                              ║";
-        return "\n" + top +
+        String title = "║                           FACULTY PROFILE                            ║";
+        return top +
                 "\n" + title +
                 "\n" + line +
                 "\n" + formatLine("Faculty ID  : ", getFacultyId()) +

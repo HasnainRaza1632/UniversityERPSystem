@@ -74,8 +74,8 @@ public class Course {
         String line = "╠══════════════════════════════════════════════════════════════════════╣";
         String top =  "╔══════════════════════════════════════════════════════════════════════╗";
         String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
-        String title = "║                         COURSE DETAILS                              ║";
-        return "\n" + top +
+        String title = "║                            COURSE DETAILS                            ║";
+        return top +
                 "\n" + title +
                 "\n" + line +
                 "\n" + formatLine("Course ID   : ", getCourseId()) +

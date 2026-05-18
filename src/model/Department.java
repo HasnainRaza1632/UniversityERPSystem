@@ -83,8 +83,8 @@ public class Department {
         String line = "╠══════════════════════════════════════════════════════════════════════╣";
         String top =  "╔══════════════════════════════════════════════════════════════════════╗";
         String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
-        String title = "║                       DEPARTMENT DETAILS                            ║";
-        return "\n" + top +
+        String title = "║                          DEPARTMENT DETAILS                          ║";
+        return top +
                 "\n" + title +
                 "\n" + line +
                 "\n" + formatLine("Dept ID  : ", getDeptId()) +
