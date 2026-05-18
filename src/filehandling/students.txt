@@ -1,1 +1,3 @@
-74708,hasnain,chandiohasnain@gmail.com,+923092264800,2,null,hasnain.74708
+74708,hasnain,chandiohasnain@gmail.com,+923092264800,2,CS,hasnain.74708
+S001,Alice Smith,alice@example.com,1234567890,1,CS,alice.smith
+S002,Bob Jones,bob@example.com,0987654321,3,EE,bob.jones

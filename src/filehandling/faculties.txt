@@ -1,1 +1,3 @@
 74701,Nawaz Ali,nawazalichandio@gmail.com,03092264800,Professor,0.5,null,nawaz
+F001,Dr. Emmett Brown,brown@example.com,5550100,Professor,90000.0,CS,dr.brown
+F002,Dr. Walter White,white@example.com,5550200,Associate Professor,80000.0,EE,dr.white

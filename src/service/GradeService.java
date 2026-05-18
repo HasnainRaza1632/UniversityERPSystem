@@ -7,6 +7,7 @@ import model.Course;
 import model.Grade;
 import model.Student;
 import utils.InputHelper;
+import validation.GradeValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class GradeService {
      * Assign a grade to a student for a specific course
      */
     public static boolean assignGrade(String studentId, String courseId, String gradeLetter, double gradePoint) {
-        String validationError = validateGradeInputs(studentId, courseId, gradeLetter);
+        String validationError = GradeValidator.validate(studentId, courseId, gradeLetter);
         if (validationError != null) {
             return false;
         }
@@ -86,29 +87,9 @@ public class GradeService {
         return StudentService.calculateGPA(studentId);
     }
 
-    /**
-     * Validate grade inputs
-     */
-    private static String validateGradeInputs(String studentId, String courseId, String gradeLetter) {
-        if (studentId == null || studentId.trim().isEmpty()) {
-            return "Student ID cannot be empty";
-        }
-        if (courseId == null || courseId.trim().isEmpty()) {
-            return "Course ID cannot be empty";
-        }
-        if (gradeLetter == null || gradeLetter.trim().isEmpty()) {
-            return "Grade letter cannot be empty";
-        }
-        
-        String upperGrade = gradeLetter.trim().toUpperCase();
-        if (!upperGrade.matches("A\\+?|A-|B\\+?|B-|C\\+?|C-|D\\+?|D|F")) {
-            return "Invalid grade letter format";
-        }
-        
-        return null;
-    }
-    //front end // console based
-    // only for admin
+    // ─── Console UI methods ───────────────────────────────────────────────
+
+    /** Assign a grade to a student (used by Faculty). */
     public static void assignGradeToStudents(){
         System.out.println("Valid grades: A, A-, B+, B, B-, C+, C, C-, D, F");
         System.out.print("Enter Student ID: ");
@@ -119,10 +100,42 @@ public class GradeService {
         String gradeLetter = InputHelper.readLine();
         boolean result = GradeService.assignGrade(studentId, courseId, gradeLetter, 0);
         if(result){
-            System.out.println("Grade Assigned");
+            System.out.println("✓ Grade assigned successfully.");
+        } else {
+            System.out.println("✗ Failed. Check Student ID, Course ID, or grade format.");
         }
-        else{
-            System.out.println("something went wrong");
+    }
+
+    /** View all grades in the system (used by Admin for oversight). */
+    public static void viewAllGrades(){
+        Map<String, Grade> gradeMap = GradeDAO.getAllGrades();
+        if(gradeMap.isEmpty()){
+            System.out.println("No grades recorded yet.");
+            return;
+        }
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                            ALL GRADES                                ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        for(Grade grade : gradeMap.values()){
+            System.out.println(grade.getDetails());
+        }
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+    }
+
+    /** Update an existing grade (used by Admin to correct mistakes). */
+    public static void updateGradeConsole(){
+        System.out.println("Valid grades: A, A-, B+, B, B-, C+, C, C-, D, F");
+        System.out.print("Enter Student ID: ");
+        String studentId = InputHelper.readLine();
+        System.out.print("Enter Course ID: ");
+        String courseId = InputHelper.readLine();
+        System.out.print("Enter New Grade: ");
+        String newGrade = InputHelper.readLine();
+        boolean result = GradeService.updateGrade(studentId, courseId, newGrade);
+        if(result){
+            System.out.println("✓ Grade updated successfully.");
+        } else {
+            System.out.println("✗ Failed. No existing grade found for this Student ID + Course ID.");
         }
     }
 }

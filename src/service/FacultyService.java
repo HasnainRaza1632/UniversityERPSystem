@@ -7,6 +7,7 @@ import model.Department;
 import model.Faculty;
 import model.User;
 import utils.InputHelper;
+import validation.FacultyValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,30 @@ import java.util.Map;
 
 public class FacultyService {
 
+    // ─── Box drawing constants (72 chars wide, 70 inner) ──────────────────────
+    private static final String LINE      = "╠══════════════════════════════════════════════════════════════════════╣";
+    private static final String TOP       = "╔══════════════════════════════════════════════════════════════════════╗";
+    private static final String BOT       = "╚══════════════════════════════════════════════════════════════════════╝";
+    private static final int    BOX_WIDTH = 70;
+
+    private static String row(String content) {
+        int padding = BOX_WIDTH - content.length();
+        if (padding < 0) { content = content.substring(0, BOX_WIDTH); padding = 0; }
+        return "║" + content + " ".repeat(padding) + "║";
+    }
+
+    private static String center(String text) {
+        int space = BOX_WIDTH - text.length();
+        int left  = space / 2;
+        int right = space - left;
+        return "║" + " ".repeat(left) + text + " ".repeat(right) + "║";
+    }
+
     /**
      * Add a new faculty member
      */
     public static boolean addFaculty(String name, String email, String phone, String facultyId, String designation, double salary, String departmentId, String username,String password) {
-        String validationError = validateFacultyInputs(name, email, phone, facultyId, designation, salary, username,password);
+        String validationError = FacultyValidator.validate(name, email, phone, facultyId, designation, salary, username, password);
         if (validationError != null) {
             return false;
         }
@@ -65,37 +85,62 @@ public class FacultyService {
     }
 
     /**
+     * Delete a faculty member by ID
+     */
+    public static boolean deleteFaculty(String facultyId) {
+        if (facultyId == null || facultyId.trim().isEmpty()) return false;
+        Map<String, Faculty> facultyMap = FacultyDAO.getAllFaculties();
+        Faculty faculty = facultyMap.remove(facultyId.trim());
+        if (faculty != null) {
+            FacultyDAO.saveFaculty(facultyMap);
+            Map<String, User> userMap = UserDAO.getAllUsers();
+            if (faculty.getUser() != null) {
+                userMap.remove(faculty.getUser().getUsername());
+                UserDAO.saveUser(userMap);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Search faculty by keyword
+     */
+    public static List<Faculty> searchFaculty(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) return getAllFaculties();
+        String lowerKeyword = keyword.trim().toLowerCase();
+        List<Faculty> results = new ArrayList<>();
+        for (Faculty f : getAllFaculties()) {
+            if (f.getName().toLowerCase().contains(lowerKeyword) ||
+                f.getFacultyId().toLowerCase().contains(lowerKeyword) ||
+                f.getDesignation().toLowerCase().contains(lowerKeyword)) {
+                results.add(f);
+            }
+        }
+        return results;
+    }
+
+    /**
      * Validate faculty inputs
      */
-    private static String validateFacultyInputs(String name, String email, String phone, String facultyId, String designation, double salary, String username,String password) {
-        if (name == null || name.trim().isEmpty()) return "Name cannot be empty";
-        if (email == null || !email.contains("@")) return "Invalid email format";
-        if (phone == null || phone.trim().isEmpty() || phone.length() < 10) return "Invalid phone number";
-        if (facultyId == null || facultyId.trim().isEmpty()) return "Faculty ID cannot be empty";
-        if (designation == null || designation.trim().isEmpty()) return "Designation cannot be empty";
-        if (salary < 0) return "Salary cannot be negative";
-        if (username == null || username.trim().isEmpty()) return "Username cannot be empty";
-        if (password == null || password.trim().isEmpty()) {
-            return "Password cannot be empty";
-        }
-        if (password.trim().length() < 6) {
-            return "Password must be at least 6 characters";
-        }
-        return null;
-    }
+
     // front end // console based
     //manage faculty is only for the admin
 
     public static void manageFaculty(){
         boolean running = true;
         while(running) {
-            System.out.println("========================================\n" +
-                    "            MANAGE FACULTY             \n" +
-                    "========================================\n" +
-                    "1. View All Faculty\n" +
-                    "2. Add New Faculty\n" +
-                    "3. Back\n" +
-                    "========================================");
+            System.out.println(TOP);
+            System.out.println(center("MANAGE FACULTY"));
+            System.out.println(LINE);
+            System.out.println(row(""));
+            System.out.println(row("   [ 1 ]  View All Faculty"));
+            System.out.println(row("   [ 2 ]  Add New Faculty"));
+            System.out.println(row("   [ 3 ]  Search Faculty"));
+            System.out.println(row("   [ 4 ]  Delete Faculty"));
+            System.out.println(row("   [ 5 ]  Back"));
+            System.out.println(BOT);
+            System.out.println();
 
             int choice = InputHelper.getChoice();
             switch(choice){
@@ -106,6 +151,12 @@ public class FacultyService {
                     addNewFaculty();
                     break;
                 case 3:
+                    searchFacultyConsole();
+                    break;
+                case 4:
+                    deleteFacultyConsole();
+                    break;
+                case 5:
                     running = false;
                     return;
                 default:
@@ -123,8 +174,40 @@ public class FacultyService {
             return;
         }
 
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                           ALL FACULTY                                ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
         for (Faculty f : faculties) {
             System.out.println(f.getDetails());
+        }
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+    }
+
+    private static void searchFacultyConsole() {
+        System.out.print("Enter search keyword (Name, ID, Designation): ");
+        String keyword = InputHelper.readLine();
+        List<Faculty> results = searchFaculty(keyword);
+        if (results.isEmpty()) {
+            System.out.println("No faculty matched your search.");
+            return;
+        }
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                          SEARCH RESULTS                              ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        for (Faculty f : results) {
+            System.out.println(f.getDetails());
+        }
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+    }
+
+    private static void deleteFacultyConsole() {
+        System.out.print("Enter Faculty ID to delete: ");
+        String facultyId = InputHelper.readLine();
+        boolean result = deleteFaculty(facultyId);
+        if (result) {
+            System.out.println("Faculty deleted successfully.");
+        } else {
+            System.out.println("Failed to delete faculty. ID not found.");
         }
     }
     private static void addNewFaculty(){

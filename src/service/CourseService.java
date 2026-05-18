@@ -7,6 +7,7 @@ import model.Course;
 import model.Department;
 import model.Student;
 import utils.InputHelper;
+import validation.CourseValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,30 @@ import java.util.Map;
 
 public class CourseService {
 
+    // ─── Box drawing constants (72 chars wide, 70 inner) ──────────────────────
+    private static final String LINE      = "╠══════════════════════════════════════════════════════════════════════╣";
+    private static final String TOP       = "╔══════════════════════════════════════════════════════════════════════╗";
+    private static final String BOT       = "╚══════════════════════════════════════════════════════════════════════╝";
+    private static final int    BOX_WIDTH = 70;
+
+    private static String row(String content) {
+        int padding = BOX_WIDTH - content.length();
+        if (padding < 0) { content = content.substring(0, BOX_WIDTH); padding = 0; }
+        return "║" + content + " ".repeat(padding) + "║";
+    }
+
+    private static String center(String text) {
+        int space = BOX_WIDTH - text.length();
+        int left  = space / 2;
+        int right = space - left;
+        return "║" + " ".repeat(left) + text + " ".repeat(right) + "║";
+    }
+
     /**
      * Add a new course
      */
     public static boolean addCourse(String courseId, String courseName, int creditHours, String description, String departmentId) {
-        String validationError = validateCourseInputs(courseId, courseName, creditHours, description, departmentId);
+        String validationError = CourseValidator.validate(courseId, courseName, creditHours, description, departmentId);
         if (validationError != null) {
             return false;
         }
@@ -92,39 +112,55 @@ public class CourseService {
     }
 
     /**
+     * Delete a course by ID
+     */
+    public static boolean deleteCourse(String courseId) {
+        if (courseId == null || courseId.trim().isEmpty()) return false;
+        Map<String, Course> courseMap = CourseDAO.getAllCourses();
+        if (courseMap.remove(courseId.trim()) != null) {
+            CourseDAO.saveCourse(courseMap);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Search courses by keyword
+     */
+    public static List<Course> searchCourses(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) return getAllCourses();
+        String lowerKeyword = keyword.trim().toLowerCase();
+        List<Course> results = new ArrayList<>();
+        for (Course c : getAllCourses()) {
+            if (c.getCourseName().toLowerCase().contains(lowerKeyword) ||
+                c.getCourseId().toLowerCase().contains(lowerKeyword)) {
+                results.add(c);
+            }
+        }
+        return results;
+    }
+
+    /**
      * Validate course inputs
      */
-    private static String validateCourseInputs(String courseId, String courseName, int creditHours, String description, String departmentId) {
-        if (courseId == null || courseId.trim().isEmpty()) {
-            return "Course ID cannot be empty";
-        }
-        if (courseName == null || courseName.trim().isEmpty()) {
-            return "Course name cannot be empty";
-        }
-        if (creditHours <= 0) {
-            return "Credit hours must be greater than 0";
-        }
-        if (description == null || description.trim().isEmpty()) {
-            return "Description cannot be empty";
-        }
-        if (departmentId == null || departmentId.trim().isEmpty()) {
-            return "Department ID cannot be empty";
-        }
-        return null;
-    }
+
     //front end // console based
 
     public static void manageCourses(){
         boolean running = true;
 
         while(running) {
-            System.out.println("========================================\n" +
-                    "            MANAGE COURSES             \n" +
-                    "========================================\n" +
-                    "1. View All Courses\n" +
-                    "2. Add New Course\n" +
-                    "3. Back\n" +
-                    "========================================");
+            System.out.println(TOP);
+            System.out.println(center("MANAGE COURSES"));
+            System.out.println(LINE);
+            System.out.println(row(""));
+            System.out.println(row("   [ 1 ]  View All Courses"));
+            System.out.println(row("   [ 2 ]  Add New Course"));
+            System.out.println(row("   [ 3 ]  Search Course"));
+            System.out.println(row("   [ 4 ]  Delete Course"));
+            System.out.println(row("   [ 5 ]  Back"));
+            System.out.println(BOT);
+            System.out.println();
 
             int choice = InputHelper.getChoice();
             switch(choice){
@@ -135,6 +171,12 @@ public class CourseService {
                     addNewCourse();
                     break;
                 case 3:
+                    searchCourseConsole();
+                    break;
+                case 4:
+                    deleteCourseConsole();
+                    break;
+                case 5:
                     running = false;
                     return;
                 default:
@@ -149,8 +191,40 @@ public class CourseService {
             System.out.println("No courses found");
             return;
         }
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                           ALL COURSES                                ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
         for (Course c : courses) {
             System.out.println(c.getDetails());
+        }
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+    }
+
+    private static void searchCourseConsole() {
+        System.out.print("Enter search keyword (Course Name, ID): ");
+        String keyword = InputHelper.readLine();
+        List<Course> results = searchCourses(keyword);
+        if (results.isEmpty()) {
+            System.out.println("No courses matched your search.");
+            return;
+        }
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                          SEARCH RESULTS                              ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        for (Course c : results) {
+            System.out.println(c.getDetails());
+        }
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+    }
+
+    private static void deleteCourseConsole() {
+        System.out.print("Enter Course ID to delete: ");
+        String courseId = InputHelper.readLine();
+        boolean result = deleteCourse(courseId);
+        if (result) {
+            System.out.println("Course deleted successfully.");
+        } else {
+            System.out.println("Failed to delete course. ID not found.");
         }
     }
     private static void addNewCourse(){

@@ -15,6 +15,25 @@ import java.util.Map;
 
 public class ExamService {
 
+    // ─── Box drawing constants (72 chars wide, 70 inner) ──────────────────────
+    private static final String LINE      = "╠══════════════════════════════════════════════════════════════════════╣";
+    private static final String TOP       = "╔══════════════════════════════════════════════════════════════════════╗";
+    private static final String BOT       = "╚══════════════════════════════════════════════════════════════════════╝";
+    private static final int    BOX_WIDTH = 70;
+
+    private static String row(String content) {
+        int padding = BOX_WIDTH - content.length();
+        if (padding < 0) { content = content.substring(0, BOX_WIDTH); padding = 0; }
+        return "║" + content + " ".repeat(padding) + "║";
+    }
+
+    private static String center(String text) {
+        int space = BOX_WIDTH - text.length();
+        int left  = space / 2;
+        int right = space - left;
+        return "║" + " ".repeat(left) + text + " ".repeat(right) + "║";
+    }
+
     /**
      * Schedule a new exam
      */
@@ -56,6 +75,38 @@ public class ExamService {
         return new ArrayList<>(examMap.values());
     }
 
+    /**
+     * Delete an exam by ID
+     */
+    public static boolean deleteExam(String examId) {
+        if (examId == null || examId.trim().isEmpty()) return false;
+        Map<String, Exam> examMap = ExamDAO.getAllExams();
+        if (examMap.remove(examId.trim()) != null) {
+            ExamDAO.saveExam(examMap);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Search exams by keyword
+     */
+    public static List<Exam> searchExams(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) return getAllExams();
+        String lowerKeyword = keyword.trim().toLowerCase();
+        List<Exam> results = new ArrayList<>();
+        for (Exam e : getAllExams()) {
+            if (e.getExamId().toLowerCase().contains(lowerKeyword) ||
+                (e.getCourse() != null && e.getCourse().getCourseName().toLowerCase().contains(lowerKeyword)) ||
+                (e.getCourse() != null && e.getCourse().getCourseId().toLowerCase().contains(lowerKeyword)) ||
+                e.getExamType().toLowerCase().contains(lowerKeyword) ||
+                e.getVenue().toLowerCase().contains(lowerKeyword)) {
+                results.add(e);
+            }
+        }
+        return results;
+    }
+
 
     //front end // console based
     // manage exam function only for admin
@@ -63,13 +114,17 @@ public class ExamService {
     public static  void manageExams(){
         boolean running = true;
         while(running){
-            System.out.println("========================================\n" +
-                    "              MANAGE EXAMS             \n" +
-                    "========================================\n" +
-                    "1. View All Exams\n" +
-                    "2. Schedule New Exam\n" +
-                    "3. Back\n" +
-                    "========================================");
+            System.out.println(TOP);
+            System.out.println(center("MANAGE EXAMS"));
+            System.out.println(LINE);
+            System.out.println(row(""));
+            System.out.println(row("   [ 1 ]  View All Exams"));
+            System.out.println(row("   [ 2 ]  Schedule New Exam"));
+            System.out.println(row("   [ 3 ]  Search Exam"));
+            System.out.println(row("   [ 4 ]  Delete Exam"));
+            System.out.println(row("   [ 5 ]  Back"));
+            System.out.println(BOT);
+            System.out.println();
             int choice =InputHelper.getChoice();
             switch (choice){
                 case 1:
@@ -79,6 +134,12 @@ public class ExamService {
                     scheduleNewExam();
                     break;
                 case 3:
+                    searchExamConsole();
+                    break;
+                case 4:
+                    deleteExamConsole();
+                    break;
+                case 5:
                     running = false;
                     return;
                 default:
@@ -88,14 +149,46 @@ public class ExamService {
         }
     }
     //manage exam functions
-    private static void viewAllExams(){
+    public static void viewAllExams(){
         List<Exam> exams = ExamService.getAllExams();
         if(exams.isEmpty()){
             System.out.println("No exams scheduled yet.");
             return;
         }
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                             ALL EXAMS                                ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
         for (Exam exam : exams) {
             System.out.println(exam.getDetails());
+        }
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+    }
+
+    private static void searchExamConsole() {
+        System.out.print("Enter search keyword (Exam ID, Course, Type, Venue): ");
+        String keyword = InputHelper.readLine();
+        List<Exam> results = searchExams(keyword);
+        if (results.isEmpty()) {
+            System.out.println("No exams matched your search.");
+            return;
+        }
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        System.out.println("║                          SEARCH RESULTS                              ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════════════╣");
+        for (Exam exam : results) {
+            System.out.println(exam.getDetails());
+        }
+        System.out.println("╚══════════════════════════════════════════════════════════════════════╝");
+    }
+
+    private static void deleteExamConsole() {
+        System.out.print("Enter Exam ID to delete: ");
+        String examId = InputHelper.readLine();
+        boolean result = deleteExam(examId);
+        if (result) {
+            System.out.println("Exam deleted successfully.");
+        } else {
+            System.out.println("Failed to delete exam. ID not found.");
         }
     }
     private static void scheduleNewExam(){

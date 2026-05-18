@@ -1,0 +1,5 @@
+CS101,Introduction to Programming,3,CS,F001
+CS102,Data Structures,4,CS,F001
+EE201,Circuit Analysis,3,EE,F002
+EE202,Digital Logic,4,EE,F002
+BA101,Accounting,3,BBA,null

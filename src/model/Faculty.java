@@ -37,6 +37,7 @@ public class Faculty extends Person{
         return department;
     }
 
+
     public List<Course> getAssignedCourses() {
         return assignedCourses;
     }

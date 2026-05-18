@@ -1,3 +1,7 @@
 abdshah,bro123,Admin
 hasnain.74708,chandio,Student
 nawaz,chandio,Faculty
+alice.smith,pass123,Student
+bob.jones,pass123,Student
+dr.brown,pass123,Faculty
+dr.white,pass123,Faculty
