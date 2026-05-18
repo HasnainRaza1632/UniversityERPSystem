@@ -2,6 +2,7 @@ package service;
 
 import dao.DepartmentDAO;
 import model.Department;
+import utils.InputHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,5 +72,62 @@ public class DepartmentService {
             return "Department name cannot be empty";
         }
         return null;
+    }
+    //front end // console based
+    // printing all department for the user
+    private static void viewAllDepartments() {
+        List<Department> departments = DepartmentService.getAllDepartments();
+        if (departments.isEmpty()) {
+            System.out.println("No departments found.");
+            return;
+        }
+        System.out.println("-------- ALL DEPARTMENTS --------");
+        for (Department d : departments) {
+            System.out.println(d.getDetails());
+        }
+    }
+    // adding new department
+    private static void addNewDepartment(){
+        System.out.print("Enter Department Name :");
+        String deptName = InputHelper.readLine();
+        System.out.print("Enter Department ID:");
+        String deptId = InputHelper.readLine();
+        System.out.print("Head of the Department :");
+        String hod  = InputHelper.readLine();
+        boolean result = addDepartment(deptId, deptName, hod);
+        if(result){
+            System.out.println("✓ Department added successfully.");
+        }
+        else{
+            System.out.println("✗ Failed. ID may already exist.");
+        }
+
+    }
+    //departments are managed by the admin only
+    public static void manageDepartments(){
+        boolean running = true;
+        while(running){
+            System.out.println("========================================\n" +
+                    "         MANAGE DEPARTMENTS            \n" +
+                    "========================================\n" +
+                    "1. View All Departments\n" +
+                    "2. Add New Department\n" +
+                    "3. Back\n" +
+                    "========================================");
+            switch(InputHelper.getChoice()){
+                case 1:
+                    DepartmentService.viewAllDepartments();
+                    break;
+                case 2:
+                    DepartmentService.addNewDepartment();
+                    break;
+                case 3:
+                    running = false;
+                    return;
+                default:
+                    System.out.println("Invalid choice.");
+
+            }
+        }
     }
 }

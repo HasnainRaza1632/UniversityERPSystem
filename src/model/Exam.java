@@ -91,14 +91,35 @@ public class Exam {
         this.duration = duration;
     }
 
+
+
     public String getDetails() {
-        return String.format("Exam: %s | Course: %s | Type: %s | Date: %s | Time: %s | Venue: %s",
-                examId,
-                course.getCourseName(),
-                examType,
-                examDate,
-                examTime,
-                venue);
+        String line = "╠══════════════════════════════════════════════════════════════════════╣";
+        String top =  "╔══════════════════════════════════════════════════════════════════════╗";
+        String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
+        String title = "║                          EXAM DETAILS                               ║";
+        return "\n" + top +
+                "\n" + title +
+                "\n" + line +
+                "\n" + formatLine("Exam ID     : ", getExamId()) +
+                "\n" + formatLine("Course      : ", getCourse() != null ? getCourse().getCourseName() : "N/A") +
+                "\n" + formatLine("Type        : ", getExamType()) +
+                "\n" + formatLine("Date        : ", String.valueOf(getExamDate())) +
+                "\n" + formatLine("Time        : ", String.valueOf(getExamTime())) +
+                "\n" + formatLine("Venue       : ", getVenue()) +
+                "\n" + formatLine("Total Marks : ", String.valueOf(getTotalMarks())) +
+                "\n" + formatLine("Duration    : ", getDuration() + " mins") +
+                "\n" + bot;
+    }
+    private static String formatLine(String label, String value) {
+        String content = label + value;
+        int totalWidth = 68;
+        int padding = totalWidth - content.length();
+        if (padding < 0) {
+            content = content.substring(0, totalWidth - 3) + "...";
+            padding = 0;
+        }
+        return "║  " + content + " ".repeat(padding) + "  ║";
     }
 
     @Override

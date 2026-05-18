@@ -6,6 +6,7 @@ import dao.StudentDAO;
 import model.Course;
 import model.Department;
 import model.Student;
+import utils.InputHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,5 +111,66 @@ public class CourseService {
             return "Department ID cannot be empty";
         }
         return null;
+    }
+    //front end // console based
+
+    public static void manageCourses(){
+        boolean running = true;
+
+        while(running) {
+            System.out.println("========================================\n" +
+                    "            MANAGE COURSES             \n" +
+                    "========================================\n" +
+                    "1. View All Courses\n" +
+                    "2. Add New Course\n" +
+                    "3. Back\n" +
+                    "========================================");
+
+            int choice = InputHelper.getChoice();
+            switch(choice){
+                case 1:
+                    viewAllCourse();
+                    break;
+                case 2:
+                    addNewCourse();
+                    break;
+                case 3:
+                    running = false;
+                    return;
+                default:
+                    System.out.println("invalid choice");
+            }
+        }
+
+    }
+    private static void viewAllCourse(){
+        List<Course> courses = CourseService.getAllCourses();
+        if(courses.isEmpty()){
+            System.out.println("No courses found");
+            return;
+        }
+        for (Course c : courses) {
+            System.out.println(c.getDetails());
+        }
+    }
+    private static void addNewCourse(){
+        System.out.print("Enter Department ID:");
+        String departmentId = InputHelper.readLine();
+        System.out.print("Enter Course ID:");
+        String courseId = InputHelper.readLine();
+        System.out.print("Enter Course Name:");
+        String courseName = InputHelper.readLine();
+        System.out.print("Enter Credit Hours:");
+        int creditHours = InputHelper.readInt();
+        System.out.print("Enter Course Description:");
+        String description = InputHelper.readLine();
+
+        boolean added = addCourse(courseId,courseName,creditHours,description,departmentId);
+        if(added){
+            System.out.println("Course Added successfully");
+        }
+        else{
+            System.out.println("failed to add the course");
+        }
     }
 }

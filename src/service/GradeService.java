@@ -6,6 +6,7 @@ import dao.StudentDAO;
 import model.Course;
 import model.Grade;
 import model.Student;
+import utils.InputHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,5 +106,23 @@ public class GradeService {
         }
         
         return null;
+    }
+    //front end // console based
+    // only for admin
+    public static void assignGradeToStudents(){
+        System.out.println("Valid grades: A, A-, B+, B, B-, C+, C, C-, D, F");
+        System.out.print("Enter Student ID: ");
+        String studentId = InputHelper.readLine();
+        System.out.print("Enter Course ID: ");
+        String courseId = InputHelper.readLine();
+        System.out.print("Enter Grade: ");
+        String gradeLetter = InputHelper.readLine();
+        boolean result = GradeService.assignGrade(studentId, courseId, gradeLetter, 0);
+        if(result){
+            System.out.println("Grade Assigned");
+        }
+        else{
+            System.out.println("something went wrong");
+        }
     }
 }

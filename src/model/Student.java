@@ -1,9 +1,12 @@
 package model;
 
+import service.StudentService;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Student extends Person{
+public class Student extends Person {
+
     private String regId;
     private int semester;
     private Department department;
@@ -11,13 +14,13 @@ public class Student extends Person{
     private List<Grade> gradesList;
     private User user;
 
-    public Student(String name, String email, String phone, String regId, int semester, User user){
-        super(name,email,phone);
-        this.regId = regId;
-        this.semester = semester;
-        this.user = user;
-        this.courseList = new ArrayList<>();
-        this.gradesList = new ArrayList<>();
+    public Student(String name,String email,String phone,String regId,int semester,User user){
+       super(name,email,phone);
+       this.regId = regId;
+       this.semester = semester;
+       this.user = user;
+       this.courseList = new ArrayList<>();
+       this.gradesList = new ArrayList<>();
     }
 
     public String getRegId() {
@@ -40,11 +43,12 @@ public class Student extends Person{
         return gradesList;
     }
 
-    // Setters
+    public User getUser() {
+        return user;
+    }
 
-
-    public void setGradesList(List<Grade> gradesList) {
-        this.gradesList = gradesList;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public void setCourseList(List<Course> courseList) {
@@ -59,76 +63,60 @@ public class Student extends Person{
         this.semester = semester;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
 
-    //Logic Methods
-    public boolean enrollCourse(Course course){
-        if(course != null && !courseList.contains(course)){
-            courseList.add(course);
-            return true;
-        }
-        return false;
+    public void setGradesList(List<Grade> gradesList) {
+        this.gradesList = gradesList;
     }
 
     public double getGPA(){
-        if(gradesList.isEmpty()){
-            return 0.0;
-        }
-        double totalPoints = 0.0;
-        int totalCreditHours = 0;
-
-        for (Grade grade : gradesList) {
-            totalPoints += grade.getGradePoint() * grade.getCourse().getCreditHours();
-            totalCreditHours += grade.getCourse().getCreditHours();
-        }
-
-        return totalCreditHours > 0 ? totalPoints / totalCreditHours : 0.0;
+        return StudentService.calculateGPA(this.regId);
     }
 
     public void viewTranscript(){
-        System.out.println("\n========== TRANSCRIPT ==========");
-        System.out.println("Student: " + getName());
-        System.out.println("Reg ID: " + regId);
-        System.out.println("Semester: " + semester);
-        System.out.println("================================");
-
-        if (gradesList.isEmpty()) {
-            System.out.println("No grades available.");
-        } else {
-            for (Grade grade : gradesList) {
-                System.out.println(grade.getDetails());
-            }
-            System.out.println("--------------------------------");
-            System.out.printf("GPA: %.2f\n", getGPA());
-        }
-        System.out.println("================================\n");
-
+        System.out.println(StudentService.viewTranscript(this.regId));
     }
+
 
     @Override
     public String getDetails() {
-        return "Student{" +
-                "name='" + getName() + '\'' +
-                ", regId='" + regId + '\'' +
-                ", semester=" + semester +
-                ", email='" + getEmail() + '\'' +
-                ", GPA=" + String.format("%.2f", getGPA()) +
-                '}';
+        String line = "╠══════════════════════════════════════════════════════════════════════╣";
+        String top =  "╔══════════════════════════════════════════════════════════════════════╗";
+        String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
+        String title = "║                        STUDENT PROFILE                              ║";
+        return "\n" + top +
+                "\n" + title +
+                "\n" + line +
+                "\n" + formatLine("Reg ID     : ", getRegId()) +
+                "\n" + formatLine("Name       : ", getName()) +
+                "\n" + formatLine("Email      : ", getEmail()) +
+                "\n" + formatLine("Phone      : ", getPhone()) +
+                "\n" + formatLine("Semester   : ", String.valueOf(getSemester())) +
+                "\n" + formatLine("Department : ", department != null ? department.getDeptName() : "Not Assigned") +
+                "\n" + bot;
     }
 
     @Override
     public String toString() {
-        return regId + "," + getName() + "," + semester + "," + getEmail();
+        return "Student{" +
+                "regId='" + regId + '\'' +
+                ", semester=" + semester +
+                ", department=" + department +
+                ", courseList=" + courseList +
+                ", gradesList=" + gradesList +
+                ", user=" + user +
+                '}';
     }
-
+    private static String formatLine(String label, String value) {
+        String content = label + value;
+        int totalWidth = 68;
+        int padding = totalWidth - content.length();
+        if (padding < 0) {
+            content = content.substring(0, totalWidth - 3) + "...";
+            padding = 0;
+        }
+        return "║  " + content + " ".repeat(padding) + "  ║";
+    }
 }

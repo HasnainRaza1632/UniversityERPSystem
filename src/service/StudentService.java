@@ -10,6 +10,7 @@ import model.Department;
 import model.Grade;
 import model.Student;
 import model.User;
+import utils.InputHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,26 +21,26 @@ public class StudentService {
     /**
      * Register a new student
      */
-    public static boolean registerStudent(String name, String email, String phone, String regId, int semester, String username) {
-        String validationError = validateStudentInputs(name, email, phone, regId, semester, username);
+    public static boolean registerStudent(String name, String email, String phone, String regId, int semester, String username,String password) {
+        String validationError = validateStudentInputs(name, email, phone, regId, semester, username,password);
         if (validationError != null) {
             return false;
         }
 
         Map<String, Student> studentMap = StudentDAO.getAllStudents();
-        
+        Map<String,User> userMap = UserDAO.getAllUsers();
+
         if (studentMap.containsKey(regId.trim())) {
             return false; // Student ID already taken
         }
 
-        User user = UserDAO.findUserByUsername(username.trim());
-        if (user == null || !user.getRole().equalsIgnoreCase("Student")) {
-            return false; // User not found or not a student
-        }
+        User user = new User(username.trim().toLowerCase(), password.trim(), "Student");
+        userMap.put(username.trim().toLowerCase(),user);
 
         Student student = new Student(name.trim(), email.trim(), phone.trim(), regId.trim(), semester, user);
         studentMap.put(regId.trim(), student);
         StudentDAO.saveStudent(studentMap);
+        UserDAO.saveUser(userMap);
 
         return true;
     }
@@ -180,14 +181,14 @@ public class StudentService {
     /**
      * Validate student registration inputs
      */
-    private static String validateStudentInputs(String name, String email, String phone, String regId, int semester, String username) {
+    private static String validateStudentInputs(String name, String email, String phone, String regId, int semester, String username,String password) {
         if (name == null || name.trim().isEmpty()) {
             return "Name cannot be empty";
         }
         if (email == null || email.trim().isEmpty() || !email.contains("@")) {
             return "Invalid email format";
         }
-        if (phone == null || phone.trim().isEmpty() || phone.length() < 12) {
+        if (phone == null || phone.trim().isEmpty() || phone.length() < 11) {
             return "Invalid phone number";
         }
         if (regId == null || regId.trim().isEmpty()) {
@@ -199,6 +200,121 @@ public class StudentService {
         if (username == null || username.trim().isEmpty()) {
             return "Username cannot be empty";
         }
+        if (password == null || password.trim().isEmpty()) {
+            return "Password cannot be empty";
+        }
+        if (password.trim().length() < 6) {
+            return "Password must be at least 6 characters";
+        }
         return null;
     }
+
+    public static void manageStudents(){
+        boolean running = true;
+        while(running){
+            System.out.println("========================================\n" +
+                    "            MANAGE STUDENTS           \n" +
+                    "========================================\n" +
+                    "1. View All Students\n" +
+                    "2. Register New Student\n" +
+                    "3. Assign Student to Department\n" +
+                    "4. Enroll Student in Course\n" +
+                    "5. Back\n" +
+                    "========================================");
+
+            int choice = InputHelper.getChoice();
+
+            switch(choice){
+                case 1:
+                    viewAllStudents();
+                    break;
+                case 2:
+                    registerNewStudent();
+                    break;
+                case 3:
+                    assignStudentToDepartment();
+                    break;
+                case 4:
+                    enrollStudentInCourse();
+                    break;
+                case 5:
+                    running = false;
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+
+            }
+        }
+    }
+    // manageStudents functions
+    private static void viewAllStudents(){
+        List<Student> students = StudentService.getAllStudents();
+        System.out.println("-------- ALL STUDENTS --------");
+        if (students.isEmpty()) {
+            System.out.println("No students found.");
+            return;
+        }
+        for (Student student : students) {
+            System.out.println(student.getDetails());
+        }
+    }
+    private static void registerNewStudent(){
+        System.out.print("Enter Student name :");
+        String name = InputHelper.readLine();
+        System.out.print("Enter Student's email :");
+        String email = InputHelper.readLine();
+        System.out.print("Enter Student's phone number:");
+        String phone = InputHelper.readLine();
+        System.out.print("Enter Student's Registration ID:");
+        String regId= InputHelper.readLine();
+        System.out.print("Enter Semester:");
+        int semester = InputHelper.readInt();
+        System.out.print("Enter Student's user name:");
+        String username = InputHelper.readLine();
+        System.out.print("Enter Student's profile password:");
+        String password = InputHelper.readLine();
+        String error = validateStudentInputs(name,email,phone,regId,semester,username,password);
+        if(error != null){
+            System.out.println("Registration failed : "+error);
+            return;
+        }
+
+        boolean registered = registerStudent(name,email,phone,regId,semester,username,password);
+        if(registered){
+            System.out.println("Student Registered successfully");
+        }
+        else{
+            System.out.println("✗ Failed. Check that username exists and has Student role, phone is 11 digits, semester is 1-8.");
+
+        }
+    }
+    private static void assignStudentToDepartment(){
+        System.out.print("Enter Student ID: ");
+        String studentId = InputHelper.readLine();
+        System.out.print("Enter Department ID: ");
+        String departmentId = InputHelper.readLine();
+        boolean result = StudentService.assignDepartment(studentId, departmentId);
+        if(result){
+            System.out.println("Assigned");
+        }
+        else{
+            System.out.println("✗ Failed. Student ID or Department ID not found.");
+        }
+
+    }
+    private static void enrollStudentInCourse(){
+        System.out.print("Enter Student ID: ");
+        String studentId = InputHelper.readLine();
+        System.out.print("Enter Course ID: ");
+        String courseId = InputHelper.readLine();
+
+        boolean result = StudentService.enrollCourse(studentId, courseId);
+        if(result){
+            System.out.println("Enrolled");
+        }
+        else{
+            System.out.println("✗ Failed. Student ID or Course ID not found.");
+        }
+    }
+
 }

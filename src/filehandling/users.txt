@@ -1,0 +1,3 @@
+abdshah,bro123,Admin
+hasnain.74708,chandio,Student
+nawaz,chandio,Faculty

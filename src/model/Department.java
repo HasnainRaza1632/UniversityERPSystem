@@ -78,14 +78,29 @@ public class Department {
         }
     }
 
+
     public String getDetails() {
-        return "Department{" +
-                "deptId='" + deptId + '\'' +
-                ", deptName='" + deptName + '\'' +
-                ", HOD='" + (headOfDepartment != null ? headOfDepartment : "Not Assigned") + '\'' +
-                ", courses=" + courses.size() +
-                ", faculty=" + facultyList.size() +
-                '}';
+        String line = "╠══════════════════════════════════════════════════════════════════════╣";
+        String top =  "╔══════════════════════════════════════════════════════════════════════╗";
+        String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
+        String title = "║                       DEPARTMENT DETAILS                            ║";
+        return "\n" + top +
+                "\n" + title +
+                "\n" + line +
+                "\n" + formatLine("Dept ID  : ", getDeptId()) +
+                "\n" + formatLine("Name     : ", getDeptName()) +
+                "\n" + formatLine("HOD      : ", getHeadOfDepartment() != null ? getHeadOfDepartment() : "Not Assigned") +
+                "\n" + bot;
+    }
+    private static String formatLine(String label, String value) {
+        String content = label + value;
+        int totalWidth = 68;
+        int padding = totalWidth - content.length();
+        if (padding < 0) {
+            content = content.substring(0, totalWidth - 3) + "...";
+            padding = 0;
+        }
+        return "║  " + content + " ".repeat(padding) + "  ║";
     }
 
     @Override

@@ -1,6 +1,8 @@
 package dao;
 
 import model.Course;
+import model.Department;
+import model.Faculty;
 
 import java.io.*;
 import java.util.ArrayList;

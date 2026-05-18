@@ -94,15 +94,43 @@ public class Faculty extends Person{
         System.out.println("======================================\n");
     }
 
+
+//    public String getDetails() {
+//        return "Faculty{" +
+//                "name='" + getName() + '\'' +
+//                ", facultyId='" + facultyId + '\'' +
+//                ", designation='" + designation + '\'' +
+//                ", department=" + (department != null ? department.getDeptName() : "Not Assigned") +
+//                ", assignedCourses=" + assignedCourses.size() +
+//                '}';
+//    }
     @Override
     public String getDetails() {
-        return "Faculty{" +
-                "name='" + getName() + '\'' +
-                ", facultyId='" + facultyId + '\'' +
-                ", designation='" + designation + '\'' +
-                ", department=" + (department != null ? department.getDeptName() : "Not Assigned") +
-                ", assignedCourses=" + assignedCourses.size() +
-                '}';
+        String line = "╠══════════════════════════════════════════════════════════════════════╣";
+        String top =  "╔══════════════════════════════════════════════════════════════════════╗";
+        String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
+        String title = "║                        FACULTY PROFILE                              ║";
+        return "\n" + top +
+                "\n" + title +
+                "\n" + line +
+                "\n" + formatLine("Faculty ID  : ", getFacultyId()) +
+                "\n" + formatLine("Name        : ", getName()) +
+                "\n" + formatLine("Email       : ", getEmail()) +
+                "\n" + formatLine("Phone       : ", getPhone()) +
+                "\n" + formatLine("Designation : ", getDesignation()) +
+                "\n" + formatLine("Salary      : ", String.valueOf(getSalary())) +
+                "\n" + formatLine("Department  : ", getDepartment() != null ? getDepartment().getDeptName() : "Not Assigned") +
+                "\n" + bot;
+    }
+    private static String formatLine(String label, String value) {
+        String content = label + value;
+        int totalWidth = 68;
+        int padding = totalWidth - content.length();
+        if (padding < 0) {
+            content = content.substring(0, totalWidth - 3) + "...";
+            padding = 0;
+        }
+        return "║  " + content + " ".repeat(padding) + "  ║";
     }
 
     @Override

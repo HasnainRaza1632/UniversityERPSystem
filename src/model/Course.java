@@ -68,13 +68,32 @@ public class Course {
         this.department = department;
     }
 
+
+
     public String getDetails() {
-        return "Course{" +
-                "courseId='" + courseId + '\'' +
-                ", courseName='" + courseName + '\'' +
-                ", creditHours=" + creditHours +
-                ", faculty=" + (assignedFaculty != null ? assignedFaculty.getName() : "Not Assigned") +
-                '}';
+        String line = "╠══════════════════════════════════════════════════════════════════════╣";
+        String top =  "╔══════════════════════════════════════════════════════════════════════╗";
+        String bot =  "╚══════════════════════════════════════════════════════════════════════╝";
+        String title = "║                         COURSE DETAILS                              ║";
+        return "\n" + top +
+                "\n" + title +
+                "\n" + line +
+                "\n" + formatLine("Course ID   : ", getCourseId()) +
+                "\n" + formatLine("Name        : ", getCourseName()) +
+                "\n" + formatLine("Credits     : ", String.valueOf(getCreditHours())) +
+                "\n" + formatLine("Description : ", getDescription()) +
+                "\n" + formatLine("Department  : ", getDepartment() != null ? getDepartment().getDeptName() : "Not Assigned") +
+                "\n" + bot;
+    }
+    private static String formatLine(String label, String value) {
+        String content = label + value;
+        int totalWidth = 68;
+        int padding = totalWidth - content.length();
+        if (padding < 0) {
+            content = content.substring(0, totalWidth - 3) + "...";
+            padding = 0;
+        }
+        return "║  " + content + " ".repeat(padding) + "  ║";
     }
 
     @Override
